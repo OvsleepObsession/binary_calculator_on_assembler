@@ -1,0 +1,35 @@
+Initialize Uart in 8051 (assembly):
+Serial_Init:
+        ;Set timer 1 mode to 8-bit Auto-Reload
+        mov TMOD,#20H
+        ;Enable reception
+        ;Set Serial port mode to 8-bit UART
+        mov SCON,#50H
+        ;Set baudrate to 9600 at 11.0592MHz
+        mov TH1,#0FDH
+        mov TL1,#0FDH
+        ;Start Timer
+        setb TR1
+        ret
+        
+        Send/Receive (assembly):
+
+Serial_Send:
+        ;wait for last data to be
+        ;sent completely
+        jnb TI,Serial_Send
+        ;clear the transmit interrupt flag
+        clr TI
+        ;Then move the data to send in SBUF
+        mov SBUF,A
+        ret
+       
+Serial_Read:
+        ;Wait for Receive interrupt flag
+        jnb RI,Serial_Read
+        ;If falg is set then clear it
+        clr RI
+        ;Then read data from SBUF
+        mov A,SBUF
+        ret
+        
